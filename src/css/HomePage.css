@@ -1,0 +1,79 @@
+.Todo_icon
+{
+    width:8rem;
+    max-width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+}
+.todo_container{
+    
+}
+.Todo_wrapper{
+    position: relative;
+    height: auto;
+      width:30rem;
+    border-radius:8px;
+    padding: 10px;
+    margin: 2rem auto 0 auto;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    
+}
+.cancelbutton{position: absolute;
+right: -2%;
+top:-3%;
+}
+.card_title{color: grey;
+font-size: 18px;}
+
+.input_NameList{
+  outline:none;
+    min-width:4rem ;
+max-width: 100%;
+    border: transparent;
+    font-size: 20px;
+  
+}
+.input_wrapper{
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid grey;
+    padding-bottom: 5px;
+}
+.checkbox{accent-color: grey;
+height: 20px;
+width: 30px;}
+
+.form_content{ margin-top: 1rem;
+border-bottom: 1px solid grey;}
+.form_content label{
+    font-size: 18px;
+    color: grey;
+    font-weight: 600;
+  
+}
+.form_content .content{
+    padding: 10px;
+    
+    margin-top: 0.5rem;
+    outline: none;
+    border:transparent;
+    
+    font-size: 20px;
+    margin-bottom: 0.5rem;
+    
+   
+}
+.border{border-bottom: 1px solid grey;}
+.inputfile{
+  outline: none;
+  border: transparent;
+ 
+
+    
+     
+}
+
+
+input[type="file" i] {color: black;opacity:1;}
