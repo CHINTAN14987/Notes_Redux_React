@@ -33,12 +33,10 @@ const HomePage = () => {
   };
   const CheckBoxStateHandler = () => {
     setChecked(!checked);
-    dispatch(NotesActions.addNotes({ title: listName }));
   };
 
   const cancelHandler = () => {
     setCheckBoxActive(true);
-    dispatch(NotesActions.addNotes({ title: "" }));
   };
   const inputContentHandler = (e) => setInputContent(e.target.value);
   const onSelectFile = (e) => {
@@ -55,13 +53,13 @@ const HomePage = () => {
         title: listName,
         content: inputContent,
         myfile: selectedFile,
+        id: new Date().getTime(),
       })
     );
   };
   return (
     <div className="todo_container">
       <div className="Todo_wrapper">
-        {console.log(selectedFile)}
         {!checkBoxActive && (
           <GiCrossMark
             className="cancelbutton"
@@ -73,19 +71,17 @@ const HomePage = () => {
         {checkBoxActive ? (
           <div className="Todo_icon">
             <ImCheckboxChecked
-              fill="grey"
+              fill="black"
               size="20px"
               onClick={checkBoxHandler}
             />
-            <BsPenFill fill="grey" size="20px" />
-            <AiFillFileAdd fill="grey" size="20px" />
+            <BsPenFill fill="black" size="20px" />
+            <AiFillFileAdd fill="black" size="20px" />
           </div>
         ) : (
           <>
             <div>
-              {console.log(selectedState)}
-              {console.log(checked)}
-              <h3 className="card_title">title</h3>
+              <h3 className="card_title">Title</h3>
               <div className="input_wrapper">
                 {listName ? (
                   <>
@@ -99,6 +95,7 @@ const HomePage = () => {
                 ) : (
                   <AiOutlinePlus onClick={inputVisibilityhandler} />
                 )}
+
                 {
                   <input
                     className="input_NameList"
@@ -109,12 +106,13 @@ const HomePage = () => {
                   />
                 }
               </div>
+              <div className="border"></div>
               {selectedState ? (
                 <>
                   <div className="form_content">
-                    <div>
+                    <div className="content_wrapper">
                       <label>Content</label>
-                      <input
+                      <textarea
                         type="text"
                         className="content"
                         placeholder="Lorem-ipsum"
@@ -124,18 +122,17 @@ const HomePage = () => {
                     </div>
 
                     <div className="border"></div>
-                    <div>
-                      <input
-                        type="file"
-                        name="image-uploader"
-                        onChange={onSelectFile}
-                        id="image-uploader"
-                        accept="image/*"
-                        className="inputfile"
-                      />
-                    </div>
+                    <input
+                      type="file"
+                      name="image-uploader"
+                      onChange={onSelectFile}
+                      id="image-uploader"
+                      multiple
+                      className="inputfile"
+                    />
+
+                    <div className="border"></div>
                   </div>
-                  <div className="border"></div>
                 </>
               ) : (
                 <></>
@@ -143,7 +140,11 @@ const HomePage = () => {
             </div>
           </>
         )}
-        <button onClick={submitHandler}>Submit</button>
+        {!checkBoxActive && (
+          <button className="submitHandler" onClick={submitHandler}>
+            Submit
+          </button>
+        )}
       </div>
       <DisplayedNotes />
     </div>

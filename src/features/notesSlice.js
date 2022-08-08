@@ -10,6 +10,7 @@ const notesSlice = createSlice({
         title: action.payload.title,
         content: action.payload.content,
         file: action.payload.myfile,
+        id: action.payload.id,
       });
     },
   },
