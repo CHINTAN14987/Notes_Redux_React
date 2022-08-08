@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createRef, useRef } from "react";
 import "../css/HomePage.css";
 import { ImCheckboxChecked } from "react-icons/im";
 import { BsPenFill } from "react-icons/bs";
@@ -11,16 +11,28 @@ import { NotesActions } from "../features/notesSlice";
 
 import DisplayedNotes from "./DisplayedNotes.js";
 
+const color = [
+  "#ff0000",
+  "#0000ff",
+  "#3cb371",
+  "#ffa500",
+  "#ee82ee",
+  "#6a5acd",
+];
+
 const HomePage = () => {
   const [checkBoxActive, setCheckBoxActive] = useState(true);
+  const [textColor, setTextColor] = useState(false);
   const [inputVisible, setInputVisible] = useState(false);
   const [listName, setListName] = useState("");
   const [checked, setChecked] = useState(false);
   const [inputContent, setInputContent] = useState("");
   const [selectedFile, setSelectedFile] = useState();
+  const [colorSelectedDisplay, setColorSelectedDisplay] = useState(false);
 
   const dispatch = useDispatch();
   const selectedState = useSelector((state) => state.NotesReducer.todoNotes);
+  const SelectedColor = useSelector((state) => state.NotesReducer.color);
 
   const checkBoxHandler = () => {
     setCheckBoxActive(false);
@@ -38,6 +50,14 @@ const HomePage = () => {
   const cancelHandler = () => {
     setCheckBoxActive(true);
   };
+  const colorChooseHandler = (color) => {
+    dispatch(NotesActions.notesColor(color));
+    setColorSelectedDisplay(true);
+    setTimeout(() => {
+      setColorSelectedDisplay(false);
+      setTextColor(false);
+    }, 1000);
+  };
   const inputContentHandler = (e) => setInputContent(e.target.value);
   const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
@@ -46,6 +66,9 @@ const HomePage = () => {
     }
 
     setSelectedFile(e.target.files[0]);
+  };
+  const textColorHandler = () => {
+    setTextColor(!textColor);
   };
   const submitHandler = () => {
     dispatch(
@@ -60,6 +83,7 @@ const HomePage = () => {
   return (
     <div className="todo_container">
       <div className="Todo_wrapper">
+        {console.log(SelectedColor)}
         {!checkBoxActive && (
           <GiCrossMark
             className="cancelbutton"
@@ -69,15 +93,61 @@ const HomePage = () => {
           />
         )}
         {checkBoxActive ? (
-          <div className="Todo_icon">
-            <ImCheckboxChecked
-              fill="black"
-              size="20px"
-              onClick={checkBoxHandler}
-            />
-            <BsPenFill fill="black" size="20px" />
-            <AiFillFileAdd fill="black" size="20px" />
-          </div>
+          <>
+            <div className="heading_wrapper">
+              <h3>Take Notes...!</h3>
+              <div className="Todo_icon">
+                <div className="boxIcon">
+                  <ImCheckboxChecked
+                    fill="black"
+                    size="20px"
+                    onClick={checkBoxHandler}
+                  />
+                  <div className="checboxIcon_content">New List</div>
+                </div>
+                <div className="boxIcon">
+                  <BsPenFill
+                    fill="black"
+                    size="20px"
+                    onClick={textColorHandler}
+                  />
+                  <div className="checboxIcon_content">Pen Text Color</div>
+                </div>
+                <div className="boxIcon">
+                  <AiFillFileAdd fill="black" size="20px" />
+                  <div className="checboxIcon_content">New Note with Image</div>
+                </div>
+              </div>
+            </div>
+            {textColor && (
+              <div className="color_wrapper_outer_container">
+                <div className="colorBox">
+                  {color.map((item, index) => {
+                    return (
+                      <button
+                        className="box"
+                        key={index}
+                        style={{
+                          backgroundColor: item,
+                          width: "1.5rem",
+                          height: "1.5rem",
+                        }}
+                        onClick={(e) => {
+                          let color = e.target.style.backgroundColor;
+                          colorChooseHandler(color);
+                        }}
+                      ></button>
+                    );
+                  })}
+                </div>
+                {colorSelectedDisplay && (
+                  <span className="messageColorSelected">
+                    Color is Selected
+                  </span>
+                )}
+              </div>
+            )}
+          </>
         ) : (
           <>
             <div>
@@ -103,6 +173,7 @@ const HomePage = () => {
                     value={listName}
                     type="text"
                     onChange={inputHandler}
+                    style={{ color: SelectedColor }}
                   />
                 }
               </div>
@@ -118,6 +189,7 @@ const HomePage = () => {
                         placeholder="Lorem-ipsum"
                         onChange={inputContentHandler}
                         value={inputContent}
+                        style={{ color: SelectedColor }}
                       />
                     </div>
 

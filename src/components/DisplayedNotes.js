@@ -6,7 +6,6 @@ const DisplayedNotes = () => {
   const TaskResults = useSelector((state) => state.NotesReducer.todoNotes);
   return (
     <div className="displayed_wrapper">
-      {console.log(TaskResults)}
       {TaskResults?.map((item) => {
         const { content, file, title, id } = item;
         return (

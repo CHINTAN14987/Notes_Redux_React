@@ -16,6 +16,20 @@
   border-radius: 6px;
   margin-top: 1.5rem;
 }
+.color_wrapper_outer_container {
+  position: relative;
+}
+.messageColorSelected {
+  background-color: grey;
+  position: absolute;
+  top: 120%;
+  left: 5%;
+  transition: ease-in 3s;
+  color: white;
+  padding: 3px;
+  font-size: 14px;
+  border-radius: 4px;
+}
 .Todo_wrapper {
   height: auto;
   width: 30rem;
@@ -78,6 +92,43 @@
 .border {
   border-bottom: 1px solid grey;
   width: 100%;
+}
+.boxIcon {
+  position: relative;
+}
+.boxIcon:hover .checboxIcon_content {
+  display: block;
+  background-color: grey;
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
+  position: absolute;
+  font-size: 13px;
+  top: 110%;
+  /* width: 5rem; */
+  width: max-content;
+  text-align: center;
+}
+.colorBox {
+  display: flex;
+  gap: 2px;
+  padding: 0 20px;
+  margin-top: 0.5rem;
+}
+.colorBox .box {
+  border: none;
+}
+.checboxIcon_content {
+  display: none;
+}
+
+.heading_wrapper {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+.heading_wrapper h3 {
+  margin: 0;
 }
 .inputfile {
   outline: none;
