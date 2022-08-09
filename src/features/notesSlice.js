@@ -1,6 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = { todoNotes: [], color: "" };
+const initialState = {
+  todoNotes: [],
+  color: "",
+  fontType: "",
+  backgroundImage: "",
+};
 const notesSlice = createSlice({
   name: "notes",
   initialState,
@@ -15,6 +20,12 @@ const notesSlice = createSlice({
     },
     notesColor: (state, action) => {
       state.color = action.payload;
+    },
+    notesFontStyle: (state, action) => {
+      state.fontType = action.payload;
+    },
+    noteBackground: (state, action) => {
+      state.backgroundImage = action.payload;
     },
   },
 });

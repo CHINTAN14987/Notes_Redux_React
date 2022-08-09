@@ -1,4 +1,4 @@
-import React, { createRef, useRef } from "react";
+import React from "react";
 import "../css/HomePage.css";
 import { ImCheckboxChecked } from "react-icons/im";
 import { BsPenFill } from "react-icons/bs";
@@ -19,7 +19,14 @@ const color = [
   "#ee82ee",
   "#6a5acd",
 ];
-
+const BackgroundImages = [
+  "https://www.solidbackgrounds.com/images/1920x1080/1920x1080-bright-green-solid-color-background.jpg",
+  "https://htmlcolorcodes.com/assets/images/colors/canary-yellow-color-solid-background-1920x1080.png",
+  "https://htmlcolorcodes.com/assets/images/colors/aqua-color-solid-background-1920x1080.png",
+  "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+  "https://images.unsplash.com/photo-1506038634487-60a69ae4b7b1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=766&q=80",
+  "https://wallpapercave.com/dwp1x/wp2646216.jpg",
+];
 const HomePage = () => {
   const [checkBoxActive, setCheckBoxActive] = useState(true);
   const [textColor, setTextColor] = useState(false);
@@ -29,6 +36,7 @@ const HomePage = () => {
   const [inputContent, setInputContent] = useState("");
   const [selectedFile, setSelectedFile] = useState();
   const [colorSelectedDisplay, setColorSelectedDisplay] = useState(false);
+  const [imageSelector, setImageSelector] = useState(false);
 
   const dispatch = useDispatch();
   const selectedState = useSelector((state) => state.NotesReducer.todoNotes);
@@ -58,6 +66,7 @@ const HomePage = () => {
       setTextColor(false);
     }, 1000);
   };
+
   const inputContentHandler = (e) => setInputContent(e.target.value);
   const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
@@ -80,15 +89,21 @@ const HomePage = () => {
       })
     );
   };
+  const imageHandler = () => {
+    setImageSelector(!imageSelector);
+  };
+
+  const backgroundHandler = (i) => {
+    dispatch(NotesActions.noteBackground(i));
+  };
   return (
     <div className="todo_container">
       <div className="Todo_wrapper">
-        {console.log(SelectedColor)}
         {!checkBoxActive && (
           <GiCrossMark
             className="cancelbutton"
             size="18px"
-            fill="grey"
+            fill="black"
             onClick={cancelHandler}
           />
         )}
@@ -114,7 +129,11 @@ const HomePage = () => {
                   <div className="checboxIcon_content">Pen Text Color</div>
                 </div>
                 <div className="boxIcon">
-                  <AiFillFileAdd fill="black" size="20px" />
+                  <AiFillFileAdd
+                    fill="black"
+                    size="20px"
+                    onClick={imageHandler}
+                  />
                   <div className="checboxIcon_content">New Note with Image</div>
                 </div>
               </div>
@@ -147,6 +166,24 @@ const HomePage = () => {
                 )}
               </div>
             )}
+            {imageSelector ? (
+              <div className="backgroundImages_wrapper">
+                {BackgroundImages.map((item, index) => {
+                  return (
+                    <img
+                      style={{ border: "2px solid #F1F1F1" }}
+                      key={index}
+                      src={item}
+                      onClick={() => {
+                        backgroundHandler(item);
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            ) : (
+              <></>
+            )}
           </>
         ) : (
           <>
@@ -163,7 +200,11 @@ const HomePage = () => {
                     />
                   </>
                 ) : (
-                  <AiOutlinePlus onClick={inputVisibilityhandler} />
+                  <AiOutlinePlus
+                    fill="black"
+                    size="25px"
+                    onClick={inputVisibilityhandler}
+                  />
                 )}
 
                 {
@@ -173,7 +214,11 @@ const HomePage = () => {
                     value={listName}
                     type="text"
                     onChange={inputHandler}
-                    style={{ color: SelectedColor }}
+                    style={{
+                      color: SelectedColor,
+                      fontSize: "20px",
+                      fontWeight: "600",
+                    }}
                   />
                 }
               </div>
@@ -183,14 +228,20 @@ const HomePage = () => {
                   <div className="form_content">
                     <div className="content_wrapper">
                       <label>Content</label>
-                      <textarea
-                        type="text"
-                        className="content"
-                        placeholder="Lorem-ipsum"
-                        onChange={inputContentHandler}
-                        value={inputContent}
-                        style={{ color: SelectedColor }}
-                      />
+                      <div className="textArea_Input">
+                        <textarea
+                          type="text"
+                          className="content"
+                          placeholder="Lorem-ipsum"
+                          onChange={inputContentHandler}
+                          value={inputContent}
+                          style={{
+                            color: SelectedColor,
+                            fontSize: "20px",
+                            fontWeight: "600",
+                          }}
+                        />
+                      </div>
                     </div>
 
                     <div className="border"></div>

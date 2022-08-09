@@ -1,10 +1,27 @@
 .DisplayedItem {
   height: auto;
   width: 15rem;
-  border-radius: 8px;
+min-height: 10rem;
   margin-top: 2rem;
   padding: 10px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+.DisplayedItem h3{
+  margin: 0;
+}
+.textEditor_Icons{
+  display: flex;
+  gap: 10px;
+}
+.texteditor
+{
+  height: 2rem;width: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #F1F1F1;
+  cursor: pointer;
+ 
 }
 .displayed_wrapper {
   display: flex;
