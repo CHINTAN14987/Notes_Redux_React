@@ -1,15 +1,15 @@
-import React from "react";
 import "../css/HomePage.css";
 import { ImCheckboxChecked } from "react-icons/im";
 import { BsPenFill } from "react-icons/bs";
 import { AiFillFileAdd, AiOutlinePlus } from "react-icons/ai";
-import { GiCrossMark } from "react-icons/gi";
+import { TiCancel } from "react-icons/ti";
 
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NotesActions } from "../features/notesSlice";
-
 import DisplayedNotes from "./DisplayedNotes.js";
+import { Switch } from "antd";
+import React from "react";
 
 const color = [
   "#ff0000",
@@ -37,6 +37,7 @@ const HomePage = () => {
   const [selectedFile, setSelectedFile] = useState();
   const [colorSelectedDisplay, setColorSelectedDisplay] = useState(false);
   const [imageSelector, setImageSelector] = useState(false);
+  const [toggleBackgrounDColor, SetToggleBackGroundColor] = useState();
 
   const dispatch = useDispatch();
   const selectedState = useSelector((state) => state.NotesReducer.todoNotes);
@@ -47,6 +48,10 @@ const HomePage = () => {
   };
   const inputVisibilityhandler = () => {
     setInputVisible(!inputVisible);
+  };
+  const onChange = (checked) => {
+    console.log(`switch to ${checked}`);
+    SetToggleBackGroundColor(checked);
   };
   const inputHandler = (e) => {
     setListName(e.target.value);
@@ -97,24 +102,48 @@ const HomePage = () => {
     dispatch(NotesActions.noteBackground(i));
   };
   return (
-    <div className="todo_container">
-      <div className="Todo_wrapper">
+    <div
+      className="todo_container"
+      style={
+        toggleBackgrounDColor
+          ? { backgroundColor: "#202124" }
+          : { backgroundColor: "white" }
+      }
+    >
+      <Switch onChange={onChange} />
+
+      <div
+        className="Todo_wrapper"
+        style={
+          toggleBackgrounDColor
+            ? { border: " 1px solid #e8eaed" }
+            : { border: " 1px white" }
+        }
+      >
         {!checkBoxActive && (
-          <GiCrossMark
+          <TiCancel
             className="cancelbutton"
-            size="18px"
-            fill="black"
+            size="25px"
+            fill={toggleBackgrounDColor ? " #e8eaed" : "grey"}
             onClick={cancelHandler}
           />
         )}
         {checkBoxActive ? (
           <>
             <div className="heading_wrapper">
-              <h3>Take Notes...!</h3>
+              <h3
+                style={
+                  toggleBackgrounDColor
+                    ? { color: "#e8eaed" }
+                    : { color: "grey" }
+                }
+              >
+                Take Notes...!
+              </h3>
               <div className="Todo_icon">
                 <div className="boxIcon">
                   <ImCheckboxChecked
-                    fill="black"
+                    fill={toggleBackgrounDColor ? " #e8eaed" : "grey"}
                     size="20px"
                     onClick={checkBoxHandler}
                   />
@@ -122,7 +151,7 @@ const HomePage = () => {
                 </div>
                 <div className="boxIcon">
                   <BsPenFill
-                    fill="black"
+                    fill={toggleBackgrounDColor ? " #e8eaed" : "grey"}
                     size="20px"
                     onClick={textColorHandler}
                   />
@@ -130,7 +159,7 @@ const HomePage = () => {
                 </div>
                 <div className="boxIcon">
                   <AiFillFileAdd
-                    fill="black"
+                    fill={toggleBackgrounDColor ? " #e8eaed" : "grey"}
                     size="20px"
                     onClick={imageHandler}
                   />
@@ -188,8 +217,28 @@ const HomePage = () => {
         ) : (
           <>
             <div>
-              <h3 className="card_title">Title</h3>
-              <div className="input_wrapper">
+              <label
+                className="card_title"
+                style={
+                  toggleBackgrounDColor
+                    ? { color: "#e8eaed" }
+                    : { color: "grey" }
+                }
+              >
+                Title
+              </label>
+              <div
+                className="input_wrapper"
+                style={
+                  toggleBackgrounDColor
+                    ? {
+                        borderBottom: "2px solid rgb(232, 234, 237)",
+                      }
+                    : {
+                        borderBottom: "2px solid red",
+                      }
+                }
+              >
                 {listName ? (
                   <>
                     <input
@@ -201,7 +250,11 @@ const HomePage = () => {
                   </>
                 ) : (
                   <AiOutlinePlus
-                    fill="black"
+                    style={
+                      toggleBackgrounDColor
+                        ? { color: "#e8eaed" }
+                        : { color: "grey" }
+                    }
                     size="25px"
                     onClick={inputVisibilityhandler}
                   />
@@ -214,20 +267,44 @@ const HomePage = () => {
                     value={listName}
                     type="text"
                     onChange={inputHandler}
-                    style={{
-                      color: SelectedColor,
-                      fontSize: "20px",
-                      fontWeight: "600",
-                    }}
+                    style={
+                      toggleBackgrounDColor
+                        ? {
+                            color: "#e8eaed",
+                          }
+                        : {
+                            color: SelectedColor,
+
+                            fontWeight: "600",
+                          }
+                    }
                   />
                 }
               </div>
-              <div className="border"></div>
               {selectedState ? (
                 <>
                   <div className="form_content">
-                    <div className="content_wrapper">
-                      <label>Content</label>
+                    <div
+                      className="content_wrapper"
+                      style={
+                        toggleBackgrounDColor
+                          ? {
+                              borderBottom: "2px solid rgb(232, 234, 237)",
+                            }
+                          : {
+                              borderBottom: "2px solid red",
+                            }
+                      }
+                    >
+                      <label
+                        style={
+                          toggleBackgrounDColor
+                            ? { color: "#e8eaed" }
+                            : { color: "grey" }
+                        }
+                      >
+                        Content
+                      </label>
                       <div className="textArea_Input">
                         <textarea
                           type="text"
@@ -235,26 +312,27 @@ const HomePage = () => {
                           placeholder="Lorem-ipsum"
                           onChange={inputContentHandler}
                           value={inputContent}
-                          style={{
-                            color: SelectedColor,
-                            fontSize: "20px",
-                            fontWeight: "600",
-                          }}
+                          style={
+                            toggleBackgrounDColor
+                              ? { color: "#e8eaed" }
+                              : {
+                                  color: SelectedColor,
+                                }
+                          }
                         />
                       </div>
                     </div>
 
-                    <div className="border"></div>
                     <input
                       type="file"
                       name="image-uploader"
                       onChange={onSelectFile}
                       id="image-uploader"
                       multiple
-                      className="inputfile"
+                      className={`inputfile ${
+                        toggleBackgrounDColor ? "inputfilebutton" : ""
+                      }`}
                     />
-
-                    <div className="border"></div>
                   </div>
                 </>
               ) : (
@@ -264,12 +342,20 @@ const HomePage = () => {
           </>
         )}
         {!checkBoxActive && (
-          <button className="submitHandler" onClick={submitHandler}>
+          <button
+            className="submitHandler"
+            onClick={submitHandler}
+            style={
+              toggleBackgrounDColor
+                ? { backgroundColor: "black", color: "#e8eaed" }
+                : { backgroundColor: "red", color: "grey" }
+            }
+          >
             Submit
           </button>
         )}
       </div>
-      <DisplayedNotes />
+      <DisplayedNotes toggleBackgrounDColor={toggleBackgrounDColor} />
     </div>
   );
 };
