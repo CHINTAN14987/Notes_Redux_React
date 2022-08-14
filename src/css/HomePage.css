@@ -8,14 +8,24 @@
 .todo_container {
   min-height: 100vh;
 }
+.progressWrapper {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
 .submitHandler {
-  padding: 10px 20px;
-  width: 100%;
+  /* width: 100%; */
   font-weight: 600;
-  font-size: 20px;
+  width: 6rem;
+  padding: 5px;
+  text-align: center;
+  font-size: 15px;
   border: transparent;
-  border-radius: 6px;
-  margin-top: 1.5rem;
+  cursor: pointer;
+  /* border-radius: 6px; */
+  /* margin-top: 1.5rem; */
 }
 .color_wrapper_outer_container {
   position: relative;
@@ -31,13 +41,38 @@
   font-size: 14px;
   border-radius: 4px;
 }
+.button_wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  /* margin-top: 0.5rem; */
+  height: 4rem;
+  padding-bottom: 0.2rem;
+}
+.switchContainer {
+  height: 5rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.modeWrapper {
+  display: flex;
+  height: 3rem;
+  width: 25rem;
+  justify-content: space-between;
+  padding: 10px;
+  margin-right: 1rem;
+}
+.modeWrapper p {
+  text-align: center;
+}
 .Todo_wrapper {
   height: auto;
   width: 35rem;
+  max-width: 100%;
   /* border-radius: 8px; */
   padding: 10px;
   margin: 2rem auto 0 auto;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   position: relative;
 }
 .cancelbutton {
@@ -49,9 +84,11 @@
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.00625em;
-  font-family: "Google Sans", Roboto, Arial, sans-serif;
 }
-
+.closeButton {
+  font-size: 12px;
+  cursor: pointer;
+}
 .input_NameList {
   border: none;
   outline: none;
@@ -64,20 +101,20 @@
 .input_wrapper {
   display: flex;
   align-items: center;
+  margin-top: 0.5rem;
 }
 .checkbox {
   accent-color: grey;
   height: 15px;
   width: 15px;
 }
-input::placeholder {
+/* input::placeholder {
   font-size: 12px;
-}
+} */
 textarea::placeholder {
   font-size: 12px;
-  bottom: 0px;
   position: absolute;
-  top: 0px;
+  bottom: 20%;
   text-align: left;
   z-index: 1;
   -webkit-transition: all ease-out 0.5s;
@@ -90,15 +127,22 @@ textarea::placeholder {
   font-size: 13px;
   color: black;
   font-weight: 600;
+  margin-top: 0.5rem;
 }
-.textArea_Input {
-  position: relative;
-}
+
 .form_content .content {
+  position: relative;
+  resize: none;
   outline: none;
   border: transparent;
   font-size: 15px;
+  font-weight: 600;
   background-color: inherit;
+  width: 100%;
+}
+
+.content::-webkit-scrollbar {
+  display: none;
 }
 .content_wrapper {
   display: flex;
@@ -168,6 +212,34 @@ textarea::placeholder {
   width: 70px;
   height: 70px;
 }
+#image-uploader {
+  opacity: 0;
+  cursor: pointer;
+}
+
+.inputFileWrapper {
+  position: relative;
+}
+.fileIcon {
+  position: absolute;
+}
+.filebutton {
+  /* border-radius: 50%; */
+  width: 3rem;
+  height: 3rem;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+/* .inputFileWrapper::after {
+  content: "Select File";
+  width: 2rem;
+  position: absolute;
+  color: black;
+  left: 0;
+} */
 /* .input_NameList:hover {
   animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
   transform: translate3d(0, 0, 0);
@@ -193,6 +265,7 @@ input[type="file"]::file-selector-button {
   padding: 10px;
   font-weight: 600;
   border: 1px solid black;
+  visibility: hidden;
 }
 .inputfilebutton ::file-selector-button {
   background-color: #e8eaed;

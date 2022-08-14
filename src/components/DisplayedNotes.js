@@ -1,28 +1,40 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "../css/DisplayedNotes.css";
 import { FaBold } from "react-icons/fa";
 import { BiItalic } from "react-icons/bi";
 import { AiOutlineUnderline, AiFillDelete } from "react-icons/ai";
 import { IoIosColorFill } from "react-icons/io";
 import { ImFont } from "react-icons/im";
-
+import Portal from "./Portal";
+import { TiTick } from "react-icons/ti";
+import TextareaAutosize from "react-textarea-autosize";
 import { useDispatch, useSelector } from "react-redux";
 import { NotesActions } from "../features/notesSlice";
 
 const DisplayedNotes = ({ toggleBackgrounDColor }) => {
   const TaskResults = useSelector((state) => state.NotesReducer.todoNotes);
-  const SelectedColor = useSelector((state) => state.NotesReducer.color);
+  const SelectedColor = useSelector((state) => state.styleReducer.textColor);
   let dispatch = useDispatch();
-  // const SelectedBackgroundImage = useSelector(
-  //   (state) => state.NotesReducer.backgroundImage
-  // );
+  const SelectedBackgroundImage = useSelector(
+    (state) => state.NotesReducer.backgroundImage
+  );
 
   const [iconSelector, setIconSelector] = useState(false);
   const [fontSelector, setFontSelector] = useState(false);
   const [boldSelect, setBoldSelect] = useState(false);
   const [italicSelect, setItalicSelect] = useState(false);
   const [underlineSelect, setUnderLineSelect] = useState(false);
-  const selectedfont = useSelector((state) => state.NotesReducer.fontType);
+  const [iconActive, setIconActive] = useState(false);
+  const [iconInActive, setIconInActive] = useState(false);
+  const [editSuccessful, setEditSuccessful] = useState(false);
+  const [itemID, setItemID] = useState(null);
+  const [itemID1, setItemID1] = useState(null);
+  const [itemID2, setItemID2] = useState(null);
+  const [openPortal, setOpenPortal] = useState(false);
+
+  const selectedBackgrounDImage = useSelector(
+    (state) => state.styleReducer.backgroundImage
+  );
 
   const color = [
     "#ff0000",
@@ -33,34 +45,32 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
     "#6a5acd",
   ];
   const fontSizes = [10, 12, 14, 16, 18, 20, 22, 24];
+  const imageClickHandler = () => {
+    setOpenPortal(true);
+  };
 
   const colorChooseHandler = (item, id) => {
     const myElement = document.getElementById(id);
     myElement.style.backgroundColor = item;
+    myElement.style.backgroundImage = "";
   };
+
   const boldTextHandler = (id) => {
     const myElement = document.getElementById(id).childNodes;
 
     setBoldSelect(!boldSelect);
-    myElement[1].style.fontWeight = "900";
-    myElement[2].style.fontWeight = "900";
-
     if (boldSelect) {
-      myElement[1].style.fontWeight = "normal";
       myElement[2].style.fontWeight = "normal";
     } else {
-      myElement[1].style.fontWeight = "900";
       myElement[2].style.fontWeight = "900";
     }
   };
+
   const italicFontHandler = (id) => {
     setItalicSelect(!italicSelect);
     const myElement = document.getElementById(id).childNodes;
-
-    myElement[1].style.fontStyle = "italic";
     myElement[2].style.fontStyle = "italic";
     if (italicSelect) {
-      myElement[1].style.fontStyle = "normal";
       myElement[2].style.fontStyle = "normal";
     }
   };
@@ -69,28 +79,34 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
     const myElement = document.getElementById(id).childNodes;
 
     if (underlineSelect) {
-      myElement[1].style.textDecoration = "none";
       myElement[2].style.textDecoration = "none";
     } else {
-      myElement[1].style.textDecoration = "underline";
       myElement[2].style.textDecoration = "underline";
     }
   };
   const colorHandler = (id) => {
+    setItemID(id);
     setIconSelector(!iconSelector);
   };
   const fontSelectorHandler = (id, item) => {
-    const nodes = document.getElementById(id).childNodes;
-    for (let i = 0; i < nodes.length; i++) {
-      if (
-        nodes[i].nodeName.toLowerCase() === "p" ||
-        nodes[i].nodeName.toLowerCase() === "h3"
-      ) {
-        nodes[i].style.fontSize = item * 1.5 + "px";
-      }
-    }
+    const nodes1 = document.getElementById(id).querySelectorAll("h3")[0];
+    const nodes2 = document.getElementById(id).querySelectorAll("p")[0];
+    nodes1.style.fontSize = item * 1.5 + "px";
+    nodes2.style.fontSize = item * 1.5 + "px";
   };
-
+  const IconActiveHandler = (id) => {
+    console.log(id);
+    setItemID2(id);
+    console.log(itemID2 === id);
+    setIconActive(true);
+    setEditSuccessful(true);
+    setIconInActive(false);
+  };
+  const IconInActiveHandler = () => {
+    setEditSuccessful(false);
+    setIconActive(false);
+    setIconInActive(true);
+  };
   const inputHandler = (e, id, Taskitem) => {
     dispatch(
       NotesActions.updateNotes({
@@ -98,6 +114,7 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
           title: e,
         },
         id: id,
+        filePreview: Taskitem.filePreview,
         myfile: Taskitem.myfile,
       })
     );
@@ -110,24 +127,51 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
         },
         id: id,
         myfile: Taskitem.myfile,
+        filePreview: Taskitem.filePreview,
       })
     );
   };
 
-  const fontactiveHandler = () => {
+  const fontactiveHandler = (id) => {
+    setItemID1(id);
     setFontSelector(!fontSelector);
   };
   const deleteHandler = (i) => {
     dispatch(NotesActions.removeNotes(i));
   };
+
+  const DisplayedItemColor = () => {
+    if (SelectedColor) {
+      return SelectedColor;
+    }
+    if (selectedBackgrounDImage) {
+      return "white";
+    } else {
+      return "black";
+    }
+  };
   return (
     <div className="displayed_wrapper">
-      {TaskResults?.map((Taskitem, Index) => {
-        const { content, myfile, title, id } = Taskitem;
+      {TaskResults?.map((Taskitem) => {
+        const { content, myfile, title, id, filePreview } = Taskitem;
+
         return (
-          <div key={id} className="DisplayedItem" id={`${id}`}>
+          <div
+            key={id}
+            className="DisplayedItem"
+            id={`${id}`}
+            style={
+              toggleBackgrounDColor
+                ? {
+                    border: "2px solid #e8eaed",
+                    backgroundImage: `url(${selectedBackgrounDImage})`,
+                  }
+                : { backgroundImage: `url(${selectedBackgrounDImage})` }
+            }
+          >
             <AiFillDelete
-              fill={toggleBackgrounDColor ? " #e8eaed" : "red"}
+              fill={toggleBackgrounDColor ? " #e8eaed" : "black"}
+              className="deleteIcon"
               onClick={() => {
                 deleteHandler(id);
               }}
@@ -166,27 +210,36 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
               </span>
               <span
                 className="texteditor texteditorfontWrapper"
-                onClick={fontactiveHandler}
+                onClick={() => {
+                  fontactiveHandler(id);
+                }}
               >
                 <ImFont
                   size="20px"
                   fill={toggleBackgrounDColor ? " #e8eaed" : "black"}
                 />
-                <div className="textEditorFont">
-                  {fontSelector &&
-                    fontSizes.map((item, index) => {
-                      return (
-                        <span
-                          key={index}
-                          onClick={() => {
-                            fontSelectorHandler(id, item);
-                          }}
-                        >
-                          {item}
-                        </span>
-                      );
-                    })}
-                </div>
+                {id === itemID1 && (
+                  <div className="textEditorFont">
+                    {fontSelector &&
+                      fontSizes.map((item, index) => {
+                        return (
+                          <span
+                            style={
+                              toggleBackgrounDColor
+                                ? { color: "#e8eaed" }
+                                : { color: "black" }
+                            }
+                            key={index}
+                            onClick={() => {
+                              fontSelectorHandler(id, item);
+                            }}
+                          >
+                            {item}
+                          </span>
+                        );
+                      })}
+                  </div>
+                )}
               </span>
 
               <span className=" texteditor texteditorcolor">
@@ -197,67 +250,259 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
                     colorHandler(id);
                   }}
                 />
-                <div className="richTextSelector_Wrapper">
-                  {iconSelector &&
-                    color.map((colorItem, index) => {
-                      return (
-                        <div
-                          className="boxcoloricon"
-                          key={index}
-                          style={{
-                            backgroundColor: colorItem,
-                            width: "1.5rem",
-                            height: "1.5rem",
-                            border: "1px solid #f1f1f1",
-                          }}
-                          onClick={(e) => {
-                            let color = e.target.style.backgroundColor;
-                            colorChooseHandler(color, Taskitem);
-                          }}
-                        ></div>
-                      );
-                    })}
-                </div>
+                {id === itemID && (
+                  <div className="richTextSelector_Wrapper">
+                    {iconSelector &&
+                      color.map((colorItem, index) => {
+                        return (
+                          <div
+                            className="boxcoloricon"
+                            key={index}
+                            style={{
+                              backgroundColor: colorItem,
+                              width: "1.5rem",
+                              height: "1.5rem",
+                              border: "1px solid #f1f1f1",
+                            }}
+                            onClick={(e) => {
+                              let color = e.target.style.backgroundColor;
+                              colorChooseHandler(color, id);
+                            }}
+                          ></div>
+                        );
+                      })}
+                  </div>
+                )}
               </span>
             </div>
 
-            <h3
-              style={{
-                color: SelectedColor,
-                fontSize: "20px",
-                fontWeight: selectedfont,
-              }}
-            >
-              {title}
-            </h3>
-            <input
-              value={title}
-              name="title"
-              onChange={(e) => {
-                inputHandler(e.target.value, id, Taskitem);
-              }}
-            />
+            <div>
+              <div className="titlecontent_wrapper">
+                {!editSuccessful && (
+                  <h3
+                    className="displayedTitle"
+                    style={
+                      toggleBackgrounDColor
+                        ? { color: "#e8eaed" }
+                        : {
+                            color: DisplayedItemColor(),
+                          }
+                    }
+                  >
+                    {title}
+                  </h3>
+                )}
 
-            {console.log(Taskitem)}
-            <input
-              value={content}
-              name="content"
-              onChange={(e) => {
-                inputHandler1(e.target.value, id, Taskitem);
-              }}
-            />
-            <p
-              style={{
-                color: SelectedColor,
-                fontSize: "20px",
-                fontWeight: selectedfont,
-              }}
-              className="content"
-            >
-              {content}
-            </p>
-            {console.log(myfile?.name, "file")}
-            {myfile && <p>{myfile?.name}</p>}
+                {
+                  <span
+                    className={`checkbox1 ${iconActive ? "iconHide" : ""}`}
+                    style={
+                      toggleBackgrounDColor
+                        ? { backgroundColor: "#e8eaed" }
+                        : {
+                            backgroundColor: "white",
+                            border: "1px solid black",
+                          }
+                    }
+                    onClick={() => {
+                      IconActiveHandler(id);
+                    }}
+                  >
+                    {iconActive && (
+                      <TiTick
+                        style={
+                          toggleBackgrounDColor
+                            ? { color: "rgb(32, 33, 36)" }
+                            : { color: "black" }
+                        }
+                        size="18px"
+                      />
+                    )}
+                  </span>
+                }
+
+                {editSuccessful && (
+                  <>
+                    {
+                      <div
+                        className="inputItemDisplay_Wrapper"
+                        style={
+                          toggleBackgrounDColor
+                            ? { borderBottom: "2px solid #e8eaed" }
+                            : { borderBottom: "2px solid #f1f1f1" }
+                        }
+                      >
+                        <input
+                          value={title}
+                          name="title"
+                          className="inputItemDisplayed"
+                          onChange={(e) => {
+                            inputHandler(e.target.value, id, Taskitem);
+                          }}
+                          style={
+                            toggleBackgrounDColor
+                              ? { color: "#e8eaed" }
+                              : { color: DisplayedItemColor() }
+                          }
+                        />
+                        {
+                          <span
+                            className="inactiveIcon"
+                            style={
+                              toggleBackgrounDColor
+                                ? { backgroundColor: "#e8eaed" }
+                                : {
+                                    backgroundColor: "white",
+                                    border: "1px solid black",
+                                  }
+                            }
+                            onClick={IconInActiveHandler}
+                          >
+                            {!iconInActive && (
+                              <TiTick
+                                style={
+                                  toggleBackgrounDColor
+                                    ? { color: "rgb(32, 33, 36)" }
+                                    : { color: "black" }
+                                }
+                                size="18px"
+                              />
+                            )}
+                          </span>
+                        }
+                      </div>
+                    }
+                  </>
+                )}
+              </div>
+              <div className="titlecontent_wrapper">
+                {!editSuccessful && (
+                  <p
+                    className="displayedTitle"
+                    style={
+                      toggleBackgrounDColor
+                        ? { color: "#e8eaed" }
+                        : {
+                            color: DisplayedItemColor(),
+                          }
+                    }
+                  >
+                    {content}
+                  </p>
+                )}
+
+                {
+                  <span
+                    className={`checkbox1 checkMainContent ${
+                      iconActive ? "iconHide" : ""
+                    }`}
+                    style={
+                      toggleBackgrounDColor
+                        ? { backgroundColor: "#e8eaed" }
+                        : {
+                            backgroundColor: "white",
+                            border: "1px solid black",
+                          }
+                    }
+                    onClick={IconActiveHandler}
+                  >
+                    {iconActive && (
+                      <TiTick
+                        style={
+                          toggleBackgrounDColor
+                            ? { color: "rgb(32, 33, 36)" }
+                            : { color: "black" }
+                        }
+                        size="18px"
+                      />
+                    )}
+                  </span>
+                }
+
+                {editSuccessful && (
+                  <div
+                    className="inputItemDisplay_Wrapper"
+                    style={
+                      toggleBackgrounDColor
+                        ? { borderBottom: "2px solid #e8eaed" }
+                        : { borderBottom: "2px solid #f1f1f1" }
+                    }
+                  >
+                    <TextareaAutosize
+                      type="text"
+                      className="content"
+                      onChange={(e) => {
+                        inputHandler1(e.target.value, id, Taskitem);
+                      }}
+                      row={1}
+                      name="title"
+                      value={content}
+                      style={
+                        toggleBackgrounDColor
+                          ? { color: "#e8eaed" }
+                          : {
+                              color: DisplayedItemColor(),
+                            }
+                      }
+                    />
+
+                    {
+                      <span
+                        className="inactiveIcon"
+                        style={
+                          toggleBackgrounDColor
+                            ? { backgroundColor: "#e8eaed" }
+                            : {
+                                backgroundColor: "white",
+                                border: "1px solid black",
+                              }
+                        }
+                        onClick={IconInActiveHandler}
+                      >
+                        {!iconInActive && (
+                          <TiTick
+                            style={
+                              toggleBackgrounDColor
+                                ? { color: "rgb(32, 33, 36)" }
+                                : { color: "black" }
+                            }
+                            size="18px"
+                          />
+                        )}
+                      </span>
+                    }
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {myfile && (
+              <>
+                {myfile.type === "image/png" ||
+                myfile.type === "image/jpeg" ||
+                myfile.type === "image/jpg" ||
+                myfile.type === "image/pdf" ? (
+                  <>
+                    <img
+                      src={filePreview}
+                      className="displayedImageItem"
+                      onClick={imageClickHandler}
+                    />
+
+                    {openPortal && (
+                      <Portal
+                        filePreview={filePreview}
+                        closePortal={() => {
+                          setOpenPortal(false);
+                        }}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <p>{myfile?.name}</p>
+                )}
+              </>
+            )}
           </div>
         );
       })}

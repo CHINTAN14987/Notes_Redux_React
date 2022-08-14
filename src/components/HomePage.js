@@ -2,14 +2,16 @@ import "../css/HomePage.css";
 import { ImCheckboxChecked } from "react-icons/im";
 import { BsPenFill } from "react-icons/bs";
 import { AiFillFileAdd, AiOutlinePlus } from "react-icons/ai";
-import { TiCancel } from "react-icons/ti";
-
-import { useState } from "react";
+import { GiFiles } from "react-icons/gi";
+import { TiTick } from "react-icons/ti";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NotesActions } from "../features/notesSlice";
 import DisplayedNotes from "./DisplayedNotes.js";
 import { Switch } from "antd";
 import React from "react";
+import TextareaAutosize from "react-textarea-autosize";
+import { styleActions } from "../features/styleSlice";
 
 const color = [
   "#ff0000",
@@ -18,19 +20,15 @@ const color = [
   "#ffa500",
   "#ee82ee",
   "#6a5acd",
+  "#000000",
 ];
 const BackgroundImages = [
-  "https://www.solidbackgrounds.com/images/1920x1080/1920x1080-bright-green-solid-color-background.jpg",
-  "https://htmlcolorcodes.com/assets/images/colors/canary-yellow-color-solid-background-1920x1080.png",
-  "https://htmlcolorcodes.com/assets/images/colors/aqua-color-solid-background-1920x1080.png",
   "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
   "https://images.unsplash.com/photo-1506038634487-60a69ae4b7b1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=766&q=80",
-  "https://wallpapercave.com/dwp1x/wp2646216.jpg",
 ];
 const HomePage = () => {
   const [checkBoxActive, setCheckBoxActive] = useState(true);
   const [textColor, setTextColor] = useState(false);
-  const [inputVisible, setInputVisible] = useState(false);
   const [listName, setListName] = useState("");
   const [checked, setChecked] = useState(false);
   const [inputContent, setInputContent] = useState("");
@@ -38,33 +36,73 @@ const HomePage = () => {
   const [colorSelectedDisplay, setColorSelectedDisplay] = useState(false);
   const [imageSelector, setImageSelector] = useState(false);
   const [toggleBackgrounDColor, SetToggleBackGroundColor] = useState();
+  const [progressValue, setProgressValue] = useState(false);
+  const [imageBackGround, setImageBackGround] = useState("");
 
   const dispatch = useDispatch();
-  const selectedState = useSelector((state) => state.NotesReducer.todoNotes);
-  const SelectedColor = useSelector((state) => state.NotesReducer.color);
 
+  const SelectedNotes = useSelector((state) => state.NotesReducer.todoNotes);
+  const SelectedColor = useSelector((state) => state.styleReducer.textColor);
+
+  const [preview, setPreview] = useState();
+  useEffect(() => {
+    function progress() {
+      setProgressValue(false);
+    }
+    if (selectedFile) {
+      setProgressValue(true);
+      setTimeout(progress, 1500);
+    }
+
+    return () => {
+      clearTimeout(progress);
+    };
+  }, [selectedFile]);
+
+  useEffect(() => {
+    if (!selectedFile) {
+      setPreview(undefined);
+      return;
+    } else {
+      const image = URL.createObjectURL(selectedFile);
+      setPreview(image);
+      // if (selectedFile.size <= 5 * 1000 * 1000) {
+      //   toast.error("Image Added Sucessfully to the Gallery");
+      // } else {
+      //   toast.error("File too Big, please select a file less than 5mb");
+      // }
+
+      return () => URL.revokeObjectURL(image);
+    }
+  }, [selectedFile]);
+
+  clearTimeout();
   const checkBoxHandler = () => {
     setCheckBoxActive(false);
   };
-  const inputVisibilityhandler = () => {
-    setInputVisible(!inputVisible);
-  };
+
   const onChange = (checked) => {
-    console.log(`switch to ${checked}`);
     SetToggleBackGroundColor(checked);
   };
   const inputHandler = (e) => {
     setListName(e.target.value);
+    if (e.target.value) {
+      setChecked(!checked);
+    } else {
+      return;
+    }
   };
-  const CheckBoxStateHandler = () => {
-    setChecked(!checked);
+  const closeFormHandler = () => {
+    setListName("");
+    setInputContent("");
+    setSelectedFile(undefined);
+    setCheckBoxActive(true);
+    dispatch(styleActions.addColor(""));
+    dispatch(styleActions.addBack(""));
   };
 
-  const cancelHandler = () => {
-    setCheckBoxActive(true);
-  };
   const colorChooseHandler = (color) => {
-    dispatch(NotesActions.notesColor(color));
+    dispatch(styleActions.addColor(color));
     setColorSelectedDisplay(true);
     setTimeout(() => {
       setColorSelectedDisplay(false);
@@ -72,14 +110,16 @@ const HomePage = () => {
     }, 1000);
   };
 
-  const inputContentHandler = (e) => setInputContent(e.target.value);
+  const inputContentHandler = (e) => {
+    setInputContent(e.target.value);
+  };
   const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
       setSelectedFile(undefined);
       return;
+    } else {
+      setSelectedFile(e.target.files[0]);
     }
-
-    setSelectedFile(e.target.files[0]);
   };
   const textColorHandler = () => {
     setTextColor(!textColor);
@@ -91,15 +131,21 @@ const HomePage = () => {
         content: inputContent,
         myfile: selectedFile,
         id: new Date().getTime(),
+        filePreview: preview,
       })
     );
+    setListName("");
+    setInputContent("");
+    setCheckBoxActive(true);
+    dispatch(styleActions.addBackGround(""));
   };
+
   const imageHandler = () => {
     setImageSelector(!imageSelector);
   };
 
   const backgroundHandler = (i) => {
-    dispatch(NotesActions.noteBackground(i));
+    dispatch(styleActions.addBackGround(i));
   };
   return (
     <div
@@ -107,27 +153,40 @@ const HomePage = () => {
       style={
         toggleBackgrounDColor
           ? { backgroundColor: "#202124" }
-          : { backgroundColor: "white" }
+          : { boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }
       }
     >
-      <Switch onChange={onChange} />
+      <div className="switchContainer">
+        <div
+          className="modeWrapper"
+          style={
+            toggleBackgrounDColor
+              ? { boxShadow: "#e8eaed 0px 5px 15px" }
+              : { boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }
+          }
+        >
+          {toggleBackgrounDColor ? (
+            <p style={{ color: "rgb(232, 234, 237)" }}>
+              Switch to Light Theme Mode
+            </p>
+          ) : (
+            <p style={{ color: "grey" }}>Switch to Dark Theme Mode</p>
+          )}
+          <Switch onChange={onChange} />
+        </div>
+      </div>
 
       <div
         className="Todo_wrapper"
         style={
           toggleBackgrounDColor
-            ? { border: " 1px solid #e8eaed" }
-            : { border: " 1px white" }
+            ? { boxShadow: "#e8eaed 0px 5px 15px" }
+            : {
+                boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                backgroundColor: "#fff",
+              }
         }
       >
-        {!checkBoxActive && (
-          <TiCancel
-            className="cancelbutton"
-            size="25px"
-            fill={toggleBackgrounDColor ? " #e8eaed" : "grey"}
-            onClick={cancelHandler}
-          />
-        )}
         {checkBoxActive ? (
           <>
             <div className="heading_wrapper">
@@ -222,7 +281,7 @@ const HomePage = () => {
                 style={
                   toggleBackgrounDColor
                     ? { color: "#e8eaed" }
-                    : { color: "grey" }
+                    : { color: "black" }
                 }
               >
                 Title
@@ -235,35 +294,35 @@ const HomePage = () => {
                         borderBottom: "2px solid rgb(232, 234, 237)",
                       }
                     : {
-                        borderBottom: "2px solid red",
+                        borderBottom: "2px solid black",
                       }
                 }
               >
                 {listName ? (
                   <>
-                    <input
-                      type="checkbox"
-                      value={checked}
-                      onChange={CheckBoxStateHandler}
-                      className="checkbox"
+                    <TiTick
+                      style={
+                        toggleBackgrounDColor
+                          ? { color: "#e8eaed", marginRight: "5px" }
+                          : { color: "black", marginRight: "5px" }
+                      }
+                      size="20px"
                     />
                   </>
                 ) : (
                   <AiOutlinePlus
                     style={
                       toggleBackgrounDColor
-                        ? { color: "#e8eaed" }
-                        : { color: "grey" }
+                        ? { color: "#e8eaed", marginRight: "5px" }
+                        : { color: "black", marginRight: "5px" }
                     }
-                    size="25px"
-                    onClick={inputVisibilityhandler}
+                    size="15px"
                   />
                 )}
 
                 {
                   <input
                     className="input_NameList"
-                    placeholder="List Name"
                     value={listName}
                     type="text"
                     onChange={inputHandler}
@@ -281,7 +340,7 @@ const HomePage = () => {
                   />
                 }
               </div>
-              {selectedState ? (
+              {SelectedNotes ? (
                 <>
                   <div className="form_content">
                     <div
@@ -292,7 +351,7 @@ const HomePage = () => {
                               borderBottom: "2px solid rgb(232, 234, 237)",
                             }
                           : {
-                              borderBottom: "2px solid red",
+                              borderBottom: "2px solid black",
                             }
                       }
                     >
@@ -300,17 +359,17 @@ const HomePage = () => {
                         style={
                           toggleBackgrounDColor
                             ? { color: "#e8eaed" }
-                            : { color: "grey" }
+                            : { color: "black" }
                         }
                       >
                         Content
                       </label>
                       <div className="textArea_Input">
-                        <textarea
+                        <TextareaAutosize
                           type="text"
                           className="content"
-                          placeholder="Lorem-ipsum"
                           onChange={inputContentHandler}
+                          row={1}
                           value={inputContent}
                           style={
                             toggleBackgrounDColor
@@ -322,17 +381,73 @@ const HomePage = () => {
                         />
                       </div>
                     </div>
+                    <div
+                      className="inputFileWrapper"
+                      style={
+                        toggleBackgrounDColor
+                          ? {
+                              borderBottom: "2px solid rgb(232, 234, 237)",
+                            }
+                          : {
+                              borderBottom: "2px solid black",
+                            }
+                      }
+                    >
+                      <div
+                        className="filebutton"
+                        style={
+                          toggleBackgrounDColor
+                            ? {
+                                backgroundColor: "rgb(232, 234, 237)",
+                              }
+                            : {
+                                backgroundColor: "black",
+                              }
+                        }
+                      >
+                        <GiFiles
+                          className="fileIcon"
+                          size="25px"
+                          fill={
+                            toggleBackgrounDColor ? " rgb(32, 33, 36)" : "#fff"
+                          }
+                        />
+                        <input
+                          type="file"
+                          name="image-uploader"
+                          onChange={onSelectFile}
+                          id="image-uploader"
+                          multiple
+                          className={`inputfile ${
+                            toggleBackgrounDColor ? "inputfilebutton" : ""
+                          }`}
+                        />
+                      </div>
 
-                    <input
-                      type="file"
-                      name="image-uploader"
-                      onChange={onSelectFile}
-                      id="image-uploader"
-                      multiple
-                      className={`inputfile ${
-                        toggleBackgrounDColor ? "inputfilebutton" : ""
-                      }`}
-                    />
+                      {progressValue ? (
+                        <div className="progressWrapper">
+                          <TiTick
+                            style={
+                              toggleBackgrounDColor
+                                ? { color: "#e8eaed", marginRight: "5px" }
+                                : { color: "black", marginRight: "5px" }
+                            }
+                            size="30px"
+                          />
+                          <span
+                            style={
+                              toggleBackgrounDColor
+                                ? { color: "#e8eaed", marginRight: "5px" }
+                                : { color: "black", marginRight: "5px" }
+                            }
+                          >
+                            File Uploaded Successfully
+                          </span>
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+                    </div>
                   </div>
                 </>
               ) : (
@@ -342,17 +457,50 @@ const HomePage = () => {
           </>
         )}
         {!checkBoxActive && (
-          <button
-            className="submitHandler"
-            onClick={submitHandler}
+          <div
+            className="button_wrapper"
             style={
               toggleBackgrounDColor
-                ? { backgroundColor: "black", color: "#e8eaed" }
-                : { backgroundColor: "red", color: "grey" }
+                ? {
+                    borderBottom: "2px solid rgb(232, 234, 237)",
+                  }
+                : {
+                    borderBottom: "2px solid black",
+                  }
             }
           >
-            Submit
-          </button>
+            {
+              <button
+                className="submitHandler"
+                onClick={submitHandler}
+                style={
+                  toggleBackgrounDColor
+                    ? {
+                        backgroundColor: "rgb(32, 33, 36)",
+                        color: "#e8eaed",
+                        border: " 2px solid #e8eaed",
+                      }
+                    : {
+                        backgroundColor: "black",
+                        color: "white",
+                      }
+                }
+              >
+                Submit
+              </button>
+            }
+            <span
+              className="closeButton"
+              onClick={closeFormHandler}
+              style={
+                toggleBackgrounDColor
+                  ? { color: "#e8eaed" }
+                  : { color: "black" }
+              }
+            >
+              Close
+            </span>
+          </div>
         )}
       </div>
       <DisplayedNotes toggleBackgrounDColor={toggleBackgrounDColor} />
