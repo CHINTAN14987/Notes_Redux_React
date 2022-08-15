@@ -164,10 +164,19 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
       return "black";
     }
   };
-  const pinhandler = (id) => {
-    setItemID2(id);
+  const pinhandler = (Taskitem) => {
+    setItemID2(Taskitem.id);
     setIconRotate(!iconRotate);
-    dispatch(NotesActions.pinNotes(id));
+    dispatch(
+      NotesActions.pinNotes({
+        title: Taskitem.title,
+        content: Taskitem.content,
+        myfile: Taskitem.myfile,
+        id: Taskitem.id,
+        filePreview: Taskitem.filePreview,
+        data: { flag: true },
+      })
+    );
   };
   const stringtruncate = (name) => {
     return name.slice(0, name.indexOf("."));
@@ -208,7 +217,7 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
                 }`}
                 fill={toggleBackgrounDColor ? " #e8eaed" : "black"}
                 onClick={() => {
-                  pinhandler(id);
+                  pinhandler(Taskitem);
                 }}
                 style={
                   iconRotate && itemID2 === id

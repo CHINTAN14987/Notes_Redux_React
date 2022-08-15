@@ -32,9 +32,21 @@ const notesSlice = createSlice({
       return state;
     },
     pinNotes: (state, action) => {
-      const Data = state.todoNotes.filter((item) => item.id !== action.payload);
+      const updatedFlagdata = state.todoNotes.map((item) => {
+        if (item.id === action.payload.id) {
+          return { ...item, ...action.payload.data };
+        } else {
+          return item;
+        }
+      });
+
+      state.todoNotes = updatedFlagdata;
+
+      const Data = state.todoNotes.filter(
+        (item) => item.flag !== action.payload.flag
+      );
       const Data1 = state.todoNotes.filter(
-        (item) => item.id === action.payload
+        (item) => item.flag === action.payload.flag
       );
 
       state.todoNotes = [...Data1, ...Data];
