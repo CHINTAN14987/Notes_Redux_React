@@ -11,27 +11,13 @@ const notesSlice = createSlice({
 
       return state;
     },
-    // notesColor: (state, action) => {
-    //   state.color = action.payload;
-    // },
-    // notesFontStyle: (state, action) => {
-    //   state.fontType = action.payload;
-    // },
-    // noteBackground: (state, action) => {
-    //   state.backgroundImage = action.payload;
-    // },
+
     removeNotes: (state, action) => {
-      state.todoNotes = state.todoNotes.filter(
-        (item) => item.id !== action.payload
-      );
+      const data = state.todoNotes.filter((item) => item.id !== action.payload);
+      console.log(data);
+      state.todoNotes = data;
     },
     updateNotes: (state, action) => {
-      // console.log(
-      //   abc.map((item) => {
-      //     return item.title;
-      //   }),
-      //   "message"
-      // );
       const updatedData = state.todoNotes.map((item) => {
         if (item.id === action.payload.id) {
           return {
@@ -44,23 +30,15 @@ const notesSlice = createSlice({
       });
       state.todoNotes = updatedData;
       return state;
-      // map((item) => {
-      //   if (item.id === action.payload.id) {
-      //     console.log(item, "one");
-      //     return (
-      //        title=action.payload.title,
-      //       content= action.payload.content,
-      //       myfile=action.payload.file,
-      //         id= action.payload.id,  )        }
-      //     return {
-      //       title: action.payload.title,
-      //       content: action.payload.content,
-      //       myfile: action.payload.file,
-      //       id: action.payload.id,
-      //     };
-      //   }
-      //   return state.todoNotes;
-      // });
+    },
+    pinNotes: (state, action) => {
+      const Data = state.todoNotes.filter((item) => item.id !== action.payload);
+      const Data1 = state.todoNotes.filter(
+        (item) => item.id === action.payload
+      );
+
+      state.todoNotes = [...Data1, ...Data];
+      return state;
     },
   },
 });

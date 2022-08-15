@@ -98,7 +98,7 @@ const HomePage = () => {
     setSelectedFile(undefined);
     setCheckBoxActive(true);
     dispatch(styleActions.addColor(""));
-    dispatch(styleActions.addBack(""));
+    dispatch(styleActions.addBackGround(""));
   };
 
   const colorChooseHandler = (color) => {
@@ -132,12 +132,14 @@ const HomePage = () => {
         myfile: selectedFile,
         id: new Date().getTime(),
         filePreview: preview,
+        flag: false,
       })
     );
     setListName("");
     setInputContent("");
     setCheckBoxActive(true);
     dispatch(styleActions.addBackGround(""));
+    setPreview(undefined);
   };
 
   const imageHandler = () => {
@@ -156,6 +158,7 @@ const HomePage = () => {
           : { boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }
       }
     >
+      {console.log(preview)}
       <div className="switchContainer">
         <div
           className="modeWrapper"
@@ -193,8 +196,8 @@ const HomePage = () => {
               <h3
                 style={
                   toggleBackgrounDColor
-                    ? { color: "#e8eaed" }
-                    : { color: "grey" }
+                    ? { color: "#e8eaed", fontWeight: "600" }
+                    : { color: "grey", fontWeight: "600" }
                 }
               >
                 Take Notes...!
@@ -222,7 +225,9 @@ const HomePage = () => {
                     size="20px"
                     onClick={imageHandler}
                   />
-                  <div className="checboxIcon_content">New Note with Image</div>
+                  <div className="checboxIcon_content">
+                    Add Stylish Images to your Displayed Notes
+                  </div>
                 </div>
               </div>
             </div>
@@ -417,7 +422,7 @@ const HomePage = () => {
                           name="image-uploader"
                           onChange={onSelectFile}
                           id="image-uploader"
-                          multiple
+                          accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf, image/*, video/*, audio/*"
                           className={`inputfile ${
                             toggleBackgrounDColor ? "inputfilebutton" : ""
                           }`}

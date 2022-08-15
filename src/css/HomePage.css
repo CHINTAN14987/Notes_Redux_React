@@ -155,6 +155,7 @@ textarea::placeholder {
 .boxIcon {
   position: relative;
 }
+
 .boxIcon:hover .checboxIcon_content {
   display: block;
   background-color: grey;

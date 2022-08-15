@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import "../css/DisplayedNotes.css";
 import { FaBold } from "react-icons/fa";
 import { BiItalic } from "react-icons/bi";
-import { AiOutlineUnderline, AiFillDelete } from "react-icons/ai";
+import {
+  AiOutlineUnderline,
+  AiFillDelete,
+  AiFillPushpin,
+} from "react-icons/ai";
 import { IoIosColorFill } from "react-icons/io";
 import { ImFont } from "react-icons/im";
 import Portal from "./Portal";
@@ -15,10 +19,6 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
   const TaskResults = useSelector((state) => state.NotesReducer.todoNotes);
   const SelectedColor = useSelector((state) => state.styleReducer.textColor);
   let dispatch = useDispatch();
-  const SelectedBackgroundImage = useSelector(
-    (state) => state.NotesReducer.backgroundImage
-  );
-
   const [iconSelector, setIconSelector] = useState(false);
   const [fontSelector, setFontSelector] = useState(false);
   const [boldSelect, setBoldSelect] = useState(false);
@@ -31,10 +31,12 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
   const [itemID1, setItemID1] = useState(null);
   const [itemID2, setItemID2] = useState(null);
   const [openPortal, setOpenPortal] = useState(false);
+  const [iconRotate, setIconRotate] = useState(false);
 
   const selectedBackgrounDImage = useSelector(
     (state) => state.styleReducer.backgroundImage
   );
+  const updatedData = useSelector((state) => state.NotesReducer.todoNotes);
 
   const color = [
     "#ff0000",
@@ -51,6 +53,7 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
 
   const colorChooseHandler = (item, id) => {
     const myElement = document.getElementById(id);
+
     myElement.style.backgroundColor = item;
     myElement.style.backgroundImage = "";
   };
@@ -70,6 +73,7 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
     setItalicSelect(!italicSelect);
     const myElement = document.getElementById(id).childNodes;
     myElement[2].style.fontStyle = "italic";
+
     if (italicSelect) {
       myElement[2].style.fontStyle = "normal";
     }
@@ -81,9 +85,18 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
     if (underlineSelect) {
       myElement[2].style.textDecoration = "none";
     } else {
-      myElement[2].style.textDecoration = "underline";
+      if (toggleBackgrounDColor) {
+        console.log(toggleBackgrounDColor);
+        myElement[2].style.textDecoration = "underline";
+        myElement[2].style.textDecorationColor = "#e8eaed";
+      }
+      if (!toggleBackgrounDColor) {
+        myElement[2].style.textDecoration = "underline";
+        myElement[2].style.textDecorationColor = "black";
+      }
     }
   };
+
   const colorHandler = (id) => {
     setItemID(id);
     setIconSelector(!iconSelector);
@@ -91,6 +104,7 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
   const fontSelectorHandler = (id, item) => {
     const nodes1 = document.getElementById(id).querySelectorAll("h3")[0];
     const nodes2 = document.getElementById(id).querySelectorAll("p")[0];
+    // console.log(nodes1);
     nodes1.style.fontSize = item * 1.5 + "px";
     nodes2.style.fontSize = item * 1.5 + "px";
   };
@@ -150,6 +164,14 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
       return "black";
     }
   };
+  const pinhandler = (id) => {
+    setItemID2(id);
+    setIconRotate(!iconRotate);
+    dispatch(NotesActions.pinNotes(id));
+  };
+  const stringtruncate = (name) => {
+    return name.slice(0, name.indexOf("."));
+  };
   return (
     <div className="displayed_wrapper">
       {TaskResults?.map((Taskitem) => {
@@ -169,13 +191,32 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
                 : { backgroundImage: `url(${selectedBackgrounDImage})` }
             }
           >
-            <AiFillDelete
-              fill={toggleBackgrounDColor ? " #e8eaed" : "black"}
-              className="deleteIcon"
-              onClick={() => {
-                deleteHandler(id);
-              }}
-            />
+            {console.log(updatedData, "One")}
+            <div className="deletePinIcon_Wrapper">
+              <AiFillDelete
+                size="20px"
+                fill={toggleBackgrounDColor ? " #e8eaed" : "black"}
+                className="deleteIcon"
+                onClick={() => {
+                  deleteHandler(id);
+                }}
+              />
+              <AiFillPushpin
+                size="20px"
+                className={`pinIcon ${
+                  iconRotate && itemID2 === id ? "pinDown" : ""
+                }`}
+                fill={toggleBackgrounDColor ? " #e8eaed" : "black"}
+                onClick={() => {
+                  pinhandler(id);
+                }}
+                style={
+                  iconRotate && itemID2 === id
+                    ? { fill: "red" }
+                    : { fill: "black" }
+                }
+              />
+            </div>
 
             <div className="textEditor_Icons">
               <span
@@ -241,7 +282,6 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
                   </div>
                 )}
               </span>
-
               <span className=" texteditor texteditorcolor">
                 <IoIosColorFill
                   fill={toggleBackgrounDColor ? " #e8eaed" : "black"}
@@ -476,12 +516,11 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
               </div>
             </div>
 
-            {myfile && (
+            {myfile && filePreview !== undefined && (
               <>
                 {myfile.type === "image/png" ||
                 myfile.type === "image/jpeg" ||
-                myfile.type === "image/jpg" ||
-                myfile.type === "image/pdf" ? (
+                myfile.type === "image/jpg" ? (
                   <>
                     <img
                       src={filePreview}
@@ -499,7 +538,66 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
                     )}
                   </>
                 ) : (
-                  <p>{myfile?.name}</p>
+                  <>
+                    <div
+                      className="fileName_wrapper"
+                      style={
+                        toggleBackgrounDColor
+                          ? { color: "rgb(232, 234, 237)" }
+                          : { color: DisplayedItemColor() }
+                      }
+                    >
+                      <span>File Name:</span>
+                      <span>{stringtruncate(myfile?.name)}</span>
+                    </div>
+                    <div
+                      className="fileDescription"
+                      style={
+                        toggleBackgrounDColor
+                          ? { color: "rgb(232, 234, 237)" }
+                          : { color: DisplayedItemColor() }
+                      }
+                    >
+                      <span>Type:</span>
+                      <span>{myfile.type}</span>
+                    </div>
+                    <div
+                      className="fileSize"
+                      style={
+                        toggleBackgrounDColor
+                          ? { color: "rgb(232, 234, 237)" }
+                          : { color: DisplayedItemColor() }
+                      }
+                    >
+                      <span>File Size:</span>
+                      <span>{Math.floor(myfile.size / 1000)}kb</span>
+                    </div>
+                    {console.log(filePreview)}
+                    {myfile.type === "application/pdf" ? (
+                      <>
+                        <div
+                          className="fileLink_Wrapper"
+                          style={
+                            toggleBackgrounDColor
+                              ? { color: "rgb(232, 234, 237)" }
+                              : { color: DisplayedItemColor() }
+                          }
+                        >
+                          <span>Link:</span>
+                          <a
+                            className="filesDocs"
+                            href={filePreview}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {filePreview}
+                          </a>
+                        </div>
+                      </>
+                    ) : (
+                      <></>
+                    )}
+                  </>
                 )}
               </>
             )}

@@ -35,7 +35,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 10px;
 }
 .inputItemDisplay_Wrapper {
   display: flex;
@@ -43,6 +42,18 @@
   align-items: flex-start;
   width: 100%;
 }
+.filesDocs:hover {
+  color: blue !important;
+}
+
+.fileSize span,
+.fileLink_Wrapper span,
+.fileDescription span {
+  margin-right: 10px;
+  overflow-wrap: anywhere;
+  color: inherit;
+}
+
 .inactiveIcon {
   height: 1rem;
   width: 1rem;
@@ -51,10 +62,23 @@
   align-items: center;
   margin-top: 5px;
 }
+.fileName_wrapper,
+.fileDescription,
+.fileSize {
+  margin-bottom: 0.5rem;
+}
+.fileName_wrapper span {
+  margin-right: 10px;
+  overflow-wrap: anywhere;
+  color: inherit;
+}
 .checkbox1 {
   display: none;
 }
-
+.fileLink_Wrapper a {
+  color: inherit;
+  overflow-wrap: anywhere;
+}
 .titlecontent_wrapper h3,
 p {
   overflow-wrap: anywhere;
@@ -71,16 +95,36 @@ p {
   flex: 0.8;
   position: relative;
 }
-.deleteIcon {
+
+.deletePinIcon_Wrapper {
   position: absolute;
   right: 2px;
   top: 5px;
+  width: 3rem;
+  display: flex;
+  justify-content: space-between;
+  margin-right: 20px;
+}
+.deleteIcon:hover,
+.pinIcon:hover {
+  fill: red !important;
+  
+}
+.pinIcon {
+  -moz-transition: all 2s linear;
+  -webkit-transition: all 2s linear;
+  transition: all 2s linear;
+}
+.pinDown {
+  -moz-transform: rotate(315deg);
+  -webkit-transform: rotate(315deg);
+  transform: rotate(315deg);
 }
 .textEditor_Icons {
   display: flex;
   gap: 10px;
   justify-content: space-between;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
 }
 .richTextSelector_Wrapper {
   display: flex;
