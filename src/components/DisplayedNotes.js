@@ -6,6 +6,7 @@ import {
   AiOutlineUnderline,
   AiFillDelete,
   AiFillPushpin,
+  AiFillStar,
 } from "react-icons/ai";
 import { IoIosColorFill } from "react-icons/io";
 import { ImFont } from "react-icons/im";
@@ -165,19 +166,27 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
     }
   };
   const pinhandler = (Taskitem) => {
-    setItemID2(Taskitem.id);
     setIconRotate(!iconRotate);
+
+    setItemID2(Taskitem.id);
+
     dispatch(
       NotesActions.pinNotes({
-        title: Taskitem.title,
-        content: Taskitem.content,
-        myfile: Taskitem.myfile,
         id: Taskitem.id,
-        filePreview: Taskitem.filePreview,
         data: { flag: true },
       })
     );
   };
+  // const pinHandler1 = (Taskitem) => {
+  //   setItemID2(Taskitem.id);
+
+  //   dispatch(
+  //     NotesActions.pinNotes({
+  //       id: Taskitem.id,
+  //       data: { flag: false },
+  //     })
+  //   );
+  // };
   const stringtruncate = (name) => {
     return name.slice(0, name.indexOf("."));
   };
@@ -210,21 +219,24 @@ const DisplayedNotes = ({ toggleBackgrounDColor }) => {
                   deleteHandler(id);
                 }}
               />
-              <AiFillPushpin
-                size="20px"
-                className={`pinIcon ${
-                  iconRotate && itemID2 === id ? "pinDown" : ""
-                }`}
-                fill={toggleBackgrounDColor ? " #e8eaed" : "black"}
-                onClick={() => {
-                  pinhandler(Taskitem);
-                }}
-                style={
-                  iconRotate && itemID2 === id
-                    ? { fill: "red" }
-                    : { fill: "black" }
-                }
-              />
+              {iconRotate && id === itemID2 ? (
+                <AiFillStar
+                  size="20px"
+                  // className={`pinIcon ${itemID2 === id ? "pinDown" : ""}`}
+
+                  // onClick={() => {
+                  //   pinHandler1(Taskitem);
+                  // }}
+                />
+              ) : (
+                <AiFillPushpin
+                  size="20px"
+                  // fill={toggleBackgrounDColor ? " #e8eaed" : "black"}
+                  onClick={() => {
+                    pinhandler(Taskitem);
+                  }}
+                />
+              )}
             </div>
 
             <div className="textEditor_Icons">

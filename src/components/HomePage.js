@@ -158,7 +158,6 @@ const HomePage = () => {
           : { boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }
       }
     >
-      {console.log(preview)}
       <div className="switchContainer">
         <div
           className="modeWrapper"

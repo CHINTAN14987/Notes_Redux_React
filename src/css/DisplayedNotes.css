@@ -108,17 +108,26 @@ p {
 .deleteIcon:hover,
 .pinIcon:hover {
   fill: red !important;
-  
 }
 .pinIcon {
-  -moz-transition: all 2s linear;
+   -moz-transition: all 2s linear;
   -webkit-transition: all 2s linear;
-  transition: all 2s linear;
+  transition: all 2s linear; 
 }
 .pinDown {
   -moz-transform: rotate(315deg);
   -webkit-transform: rotate(315deg);
   transform: rotate(315deg);
+  fill: red;
+} 
+.abc{
+  fill:red
+}
+.inactivePin {
+  transform: rotate(45deg);
+}
+.inactivePin:hover {
+  fill: red;
 }
 .textEditor_Icons {
   display: flex;

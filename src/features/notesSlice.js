@@ -40,16 +40,23 @@ const notesSlice = createSlice({
         }
       });
 
-      state.todoNotes = updatedFlagdata;
+      state.todoNotes = updatedFlagdata
+        .sort((a, b) => a.flag - b.flag)
+        .reverse();
 
-      const Data = state.todoNotes.filter(
-        (item) => item.flag !== action.payload.flag
-      );
-      const Data1 = state.todoNotes.filter(
-        (item) => item.flag === action.payload.flag
-      );
+      return state;
+    },
+    unPinNotes: (state, action) => {
+      const updatedFlagdata = state.todoNotes.map((item) => {
+        if (item.id === action.payload.id) {
+          return { ...item, ...action.payload.data };
+        } else {
+          return item;
+        }
+      });
 
-      state.todoNotes = [...Data1, ...Data];
+      state.todoNotes = updatedFlagdata.sort((a, b) => a.flag - b.flag);
+
       return state;
     },
   },
